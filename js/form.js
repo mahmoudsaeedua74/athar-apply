@@ -1,6 +1,5 @@
 import { API_BASE } from "./config.js";
 import { CLOSING_LINE, OPENING_LINE, brandMark } from "./brand.js";
-import { rememberForm } from "./gate.js";
 
 const root = document.querySelector("#app");
 const slug = document.body.dataset.form;
@@ -247,7 +246,7 @@ async function send(event, submit) {
   }
 }
 
-if (root && slug && rememberForm(slug)) {
+if (root && slug) {
   const loaded = await import(`./forms/${slug}.js`).catch(() => null);
   form = loaded?.form;
   if (form?.slug === slug) render();
