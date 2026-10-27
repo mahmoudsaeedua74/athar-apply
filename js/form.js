@@ -1,4 +1,4 @@
-import { API_BASE, TURNSTILE_SITE_KEY } from "./config.js";
+import { API_BASE } from "./config.js";
 import { CLOSING_LINE, OPENING_LINE, brandMark } from "./brand.js";
 import { rememberForm } from "./gate.js";
 
@@ -187,9 +187,6 @@ function render() {
     if (section.notice) sheet.append(el("p", "notice", section.notice));
     for (const field of section.fields) sheet.append(control(field));
   }
-  const captcha = el("div");
-  captcha.id = "turnstile";
-  sheet.append(captcha);
   status = el("p", "status");
   status.setAttribute("role", "status");
   const submit = el("button", "submit", "إرسال");
@@ -200,30 +197,16 @@ function render() {
   formNode.addEventListener("submit", (event) => send(event, submit));
   wrap.append(brandMark(OPENING_LINE), formNode);
   root.append(wrap);
-  mountTurnstile(captcha);
   refresh();
 }
 
 function sheetWait(parent, node) { parent.append(node); }
-
-function mountTurnstile(captcha) {
-  if (!TURNSTILE_SITE_KEY) return;
-  const start = () => {
-    if (!window.turnstile) {
-      window.setTimeout(start, 80);
-      return;
-    }
-    window.turnstile.render(captcha, { sitekey: TURNSTILE_SITE_KEY });
-  };
-  start();
-}
 
 async function send(event, submit) {
   event.preventDefault();
   const values = readValues(formNode);
   status.textContent = "";
   if (!validate(formNode, values)) return;
-  const token = formNode.querySelector("[name='cf-turnstile-response']")?.value || "";
   submit.disabled = true;
   try {
     const response = await fetch(`${API_BASE}/api/public/applications/${form.type}`, {
@@ -231,7 +214,6 @@ async function send(event, submit) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         ...values,
-        turnstileToken: token,
         website_url_confirm: formNode.elements.website_url_confirm.value,
       }),
     });
@@ -262,7 +244,6 @@ async function send(event, submit) {
     status.textContent = "تعذر الإرسال. حاول مرة ثانية.";
   } finally {
     submit.disabled = false;
-    try { window.turnstile?.reset(); } catch { /* widget may be absent in local setup */ }
   }
 }
 
