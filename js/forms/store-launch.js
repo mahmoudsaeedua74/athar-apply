@@ -12,6 +12,14 @@ export const form = {
   intro: "**أهلاً وسهلاً بك معنا 👋**\n\n**يسعدنا انضمامك لشركائنا في النجاح 🎯 ونتطلع لتجهيز متجرك الإلكتروني بأعلى جودة واحترافية**\n\n**حرصًا منا على تسهيل وتسريع عملية التجهيز، نرجو تعبئة النموذج التالي بكل المعلومات المطلوبة.**",
   sections: [
     {
+      title: "بيانات التواصل",
+      fields: [
+        { name: "name", label: "الاسم", kind: "text", maxLength: 200, promote: "contact_name", search: true, column: true },
+        { name: "phone", label: "الجوال", kind: "tel", maxLength: 30, promote: "contact_phone", search: true, column: true },
+        { name: "email", label: "البريد الإلكتروني", kind: "email", maxLength: 200, promote: "contact_email", search: true },
+      ],
+    },
+    {
       fields: [
         { name: "store_name", label: "اسم المتجر؟", ...paragraph, required: true, promote: "brand_name", search: true, column: true },
         { name: "invoice_store_name", label: "اسم المتجر بفاتورة الطلب للعميل", kind: "text", maxLength: 200, required: true },
@@ -55,7 +63,9 @@ export const form = {
           kind: "files",
           maxFiles: 10,
           maxBytes: 10485760,
-          hint: "حتى 10 ملفات. الحد الأقصى 10 ميجا لكل ملف.",
+          allowLink: true,
+          labelLayout: "lines",
+          hint: "حتى 10 ملفات، أو رابط Drive. الحد الأقصى 10 ميجا لكل ملف.",
         },
         { name: "beneficiary_name_en", label: "اسم المستفيد بالحساب البنكي باللغة الانجليزية؟", ...paragraph },
         { name: "has_branding", label: "هل لديك شعار خاص بالمتجر و ألوان و هوية بصرية خاصة؟", kind: "select", options: yesNo, filter: "select", shortLabel: "الهوية" },

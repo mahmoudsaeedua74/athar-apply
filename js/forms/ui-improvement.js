@@ -11,6 +11,14 @@ export const form = {
   intro: "👋 حيّاكم الله\nسعداء بتعاونكم معنا، ونتطلع نصنع لكم تجربة تسوّق مميزة تعكس هوية متجركم وتساهم في رفع تجربة المستخدم وتحسين النتائج.\n\nهذا الفورم مخصص لجمع جميع المتطلبات والمعلومات اللي نحتاجها قبل البدء في تحسين واجهة المستخدم (UI) وتصميم المتجر الإلكتروني. كل ما كانت المعلومات أوضح وأدق، قدرنا نقدم لكم تصميم يناسب نشاطكم ويحقق أهدافكم بشكل أفضل.\n\nنرجو تعبئة جميع الحقول المطلوبة قدر الإمكان، وفي حال وجود أي استفسار أو معلومة إضافية تقدرون تكتبونها داخل الفورم.\n\n💜 شاكرين لكم ثقتكم، ومتحمسين نبدأ معكم ونقدم تجربة تليق بعلامتكم التجارية.",
   sections: [
     {
+      title: "بيانات التواصل",
+      fields: [
+        { name: "name", label: "الاسم", kind: "text", maxLength: 200, promote: "contact_name", search: true, column: true },
+        { name: "phone", label: "الجوال", kind: "tel", maxLength: 30, promote: "contact_phone", search: true, column: true },
+        { name: "email", label: "البريد الإلكتروني", kind: "email", maxLength: 200, promote: "contact_email", search: true },
+      ],
+    },
+    {
       fields: [
         { name: "store_name", label: "اسم المتجر؟", ...paragraph, required: true, promote: "brand_name", search: true, column: true },
         { name: "invoice_store_name", label: "اسم المتجر بفاتورة الطلب للعميل", kind: "text", maxLength: 200, required: true },

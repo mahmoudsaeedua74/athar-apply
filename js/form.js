@@ -76,6 +76,10 @@ function readValues(formNode) {
     } else if (field.kind === "files") {
       const files = box._pickedFiles ?? [];
       if (files.length) values[field.name] = files;
+      if (field.allowLink) {
+        const link = box.querySelector('input[type="url"]')?.value.trim() ?? "";
+        if (link) values[`${field.name}_url`] = link;
+      }
     } else if (field.kind === "multi") {
       values[field.name] = [...box.querySelectorAll("input:checked")].map((input) => input.value);
     } else if (field.kind === "select") {
@@ -119,7 +123,8 @@ function validate(formNode, values) {
       if (files.length > maxFiles) message = "عدد الملفات أكبر من المسموح";
       else if (files.some((file) => !(file instanceof File) || file.size <= 0)) message = "الملف فارغ";
       else if (files.some((file) => file.size > max)) message = fileLimitMessage(field);
-      else if (field.required && files.length === 0) message = "ارفع ملف";
+      else if (field.required && files.length === 0 && !values[`${field.name}_url`]) message = "ارفع ملف";
+      else if (field.allowLink && typeof values[`${field.name}_url`] === "string" && !/^https?:\/\/\S+$/i.test(values[`${field.name}_url`])) message = "الرابط لازم يبدأ بـ http:// أو https://";
     } else if (field.required && (value == null || value === "" || (Array.isArray(value) && value.length === 0))) message = "هذا الحقل مطلوب";
     else if (typeof value === "string" && field.kind === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) message = "البريد غير صحيح";
     else if (typeof value === "string" && field.kind === "tel" && !/^\+?[0-9][0-9\s-]{7,20}$/.test(value)) message = "رقم الجوال غير صحيح";
@@ -149,21 +154,49 @@ function progressValue(values) {
   return Math.round((done / fields.length) * 100);
 }
 
+function writeLabel(label, field) {
+  if (field.labelLayout === "lines") {
+    label.className = "line-label";
+    const lines = field.label.split("\n").map((line) => line.trim()).filter(Boolean);
+    lines.forEach((line, index) => {
+      const row = el("p", index === 0 ? "line-title" : "line-item");
+      fillRich(row, line);
+      if (index === 0 && field.required) row.append(el("span", "req", " *"));
+      label.append(row);
+    });
+    return;
+  }
+  fillRich(label, field.label);
+  if (field.required) label.append(el("span", "req", " *"));
+}
+
+function filePicker(labelText) {
+  const file = document.createElement("input");
+  file.type = "file";
+  file.className = "file-input";
+  file.tabIndex = -1;
+  file.setAttribute("aria-hidden", "true");
+  const button = el("button", "file-pick", labelText);
+  button.type = "button";
+  button.addEventListener("click", () => file.click());
+  const wrap = el("div", "file-picker");
+  wrap.append(button, file);
+  return { file, wrap };
+}
+
 function control(field) {
   const box = el("div", "question");
   box.dataset.field = field.name;
   const label = el("div");
   label.id = `label-${field.name}`;
-  fillRich(label, field.label);
-  if (field.required) label.append(el("span", "req", " *"));
+  writeLabel(label, field);
   box.append(label);
   if (field.hint) box.append(el("p", "hint", field.hint));
 
   if (field.kind === "files") {
-    const file = document.createElement("input");
-    file.type = "file";
-    if ((field.maxFiles ?? 1) > 1) file.multiple = true;
-    file.setAttribute("aria-labelledby", label.id);
+    const multiple = (field.maxFiles ?? 1) > 1;
+    const { file, wrap } = filePicker(multiple ? "اختيار الملفات" : "اختيار ملف");
+    if (multiple) file.multiple = true;
     const list = el("div", "file-list");
     box._pickedFiles = [];
     const paint = () => {
@@ -188,9 +221,18 @@ function control(field) {
     };
     file.addEventListener("change", () => {
       const maxFiles = field.maxFiles ?? 1;
+      const incoming = [...(file.files ?? [])];
+      file.value = "";
+      if (maxFiles <= 1) {
+        for (const old of box._pickedFiles) uploadedCache.delete(old);
+        box._pickedFiles = incoming.slice(0, 1);
+        paint();
+        fieldError(box, "");
+        return;
+      }
       const next = [...box._pickedFiles];
       let overflow = false;
-      for (const item of file.files ?? []) {
+      for (const item of incoming) {
         if (next.length >= maxFiles) {
           overflow = true;
           break;
@@ -199,18 +241,27 @@ function control(field) {
         if (!same) next.push(item);
       }
       box._pickedFiles = next;
-      file.value = "";
       paint();
       fieldError(box, overflow ? "عدد الملفات أكبر من المسموح" : "");
     });
-    box.append(file, list);
+    box.append(wrap, list);
+    if (field.allowLink) {
+      box.append(el("p", "or", "أو"));
+      box.append(el("p", "hint", "رابط Drive"));
+      const link = document.createElement("input");
+      link.type = "url";
+      link.dir = "ltr";
+      link.maxLength = 500;
+      link.placeholder = "https://drive.google.com/...";
+      link.setAttribute("aria-label", "رابط Drive");
+      link.addEventListener("input", refresh);
+      box.append(link);
+    }
     return box;
   }
 
   if (field.kind === "file_or_url") {
-    const file = document.createElement("input");
-    file.type = "file";
-    file.setAttribute("aria-labelledby", label.id);
+    const { file, wrap } = filePicker("اختيار ملف");
     const meta = el("p", "file-meta", "");
     const divider = el("p", "or", "أو");
     const linkHint = el("p", "hint", "رابط Drive");
@@ -235,7 +286,7 @@ function control(field) {
       paint();
     });
     link.addEventListener("input", refresh);
-    box.append(file, meta, divider, linkHint, link);
+    box.append(wrap, meta, divider, linkHint, link);
     return box;
   }
 
@@ -459,7 +510,7 @@ async function send(event, submit) {
       const fields = body.fields ?? {};
       let first = null;
       for (const [name, message] of Object.entries(fields)) {
-        const box = formNode.querySelector(`[data-field="${name.replace(/_(other|name)$/, "")}"]`);
+        const box = formNode.querySelector(`[data-field="${name.replace(/_(other|name|url)$/, "")}"]`);
         if (!box) continue;
         fieldError(box, String(message));
         if (!first) first = box;
