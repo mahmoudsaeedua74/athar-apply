@@ -178,7 +178,7 @@ a { color: inherit; }
   .choices { gap: 0.4rem; }
   .choice { padding: 0.75rem 0.7rem; }
   textarea { min-height: 6.25rem; }
-  input[type="text"], input[type="email"], input[type="tel"], input[type="url"], textarea, select { font-size: 16px; }
+  input[type="text"], input[type="email"], input[type="tel"], input[type="url"], input[type="file"], textarea, select { font-size: 16px; }
   .copy { flex-wrap: wrap; align-items: stretch; }
   .copy span { min-width: 0; overflow-wrap: anywhere; }
   .actions { align-items: stretch; }
@@ -186,6 +186,7 @@ a { color: inherit; }
   .center { padding: 1.75rem 0.25rem; }
 }
 .intro, .notice, .hint, .error, .status { margin: 0; }
+.question > div:first-child, .intro, .hint { white-space: pre-line; }
 .intro { color: var(--muted); line-height: 1.8; margin-bottom: 1rem; }
 .bar { height: 0.45rem; margin: 0.8rem 0 1rem; accent-color: var(--brand); }
 .section { margin: 1.4rem 0 0.4rem; font-size: 1.05rem; }
@@ -207,7 +208,26 @@ input[type="text"], input[type="email"], input[type="tel"], input[type="url"], t
   font: inherit;
   background: white;
 }
+input[dir="ltr"] { direction: ltr; text-align: left; }
+input[type="file"] {
+  width: 100%;
+  margin-top: 0.7rem;
+  font: inherit;
+}
+.file-meta, .or {
+  margin: 0.55rem 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 400;
+}
+.or { text-align: center; font-weight: 700; }
+.file-list { display: flex; flex-direction: column; gap: 0.35rem; margin-top: 0.45rem; }
+.file-row { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; font-size: 0.9rem; }
+.file-row span { min-width: 0; overflow-wrap: anywhere; }
+button.file-remove { width: auto; flex: none; background: transparent; color: var(--danger); padding: 0.15rem 0.45rem; border-radius: 8px; }
 textarea { min-height: 7rem; resize: vertical; }
+textarea.compact { min-height: 3rem; overflow: hidden; resize: none; field-sizing: content; }
+.question > div:first-child strong { font-weight: 700; }
 input:focus, textarea:focus, select:focus, .choice:focus-within {
   outline: 2px solid var(--brand);
   outline-offset: 1px;
