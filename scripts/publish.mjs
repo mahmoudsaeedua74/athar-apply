@@ -9,3 +9,4 @@ for (const name of readdirSync(".")) {
 
 cpSync("js", "public/js", { recursive: true });
 cpSync("assets", "public/assets", { recursive: true });
+cpSync("favicon.png", "public/favicon.png");
