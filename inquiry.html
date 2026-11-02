@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>طلب تواصل — أثر</title>
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="stylesheet" href="/assets/app.css">
+</head>
+<body class="inquiry">
+  <main class="inquiry-shell">
+    <section class="inquiry-copy">
+      <img src="/assets/athar-logo.png" alt="ATHAR.ads" width="180" height="64">
+      <p class="inquiry-kicker">أثر... لأن النجاح له أثر</p>
+      <h1>ابدأ مع أثر</h1>
+      <p>لو عندك مشروع أو متجر وعايز تبدأ مع أثر، اكتب بياناتك وهنتواصل معك.</p>
+    </section>
+    <form id="inquiry-form" class="inquiry-card" novalidate>
+      <h2>طلب تواصل</h2>
+      <div id="inquiry-summary" class="inquiry-summary" hidden tabindex="-1" role="alert" aria-labelledby="inquiry-summary-title"></div>
+      <input class="hp" type="text" name="website_url_confirm" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <div class="inquiry-field" data-field="name">
+        <label for="name">الاسم <span class="req" aria-hidden="true">*</span></label>
+        <input id="name" name="name" type="text" autocomplete="name" maxlength="200" required aria-required="true">
+        <p id="name-error" class="error" data-error="name"></p>
+      </div>
+      <div class="inquiry-field" data-field="email">
+        <label for="email">البريد الإلكتروني <span class="opt">اختياري</span></label>
+        <input id="email" name="email" type="email" autocomplete="email" maxlength="200" inputmode="email" dir="ltr">
+        <p id="email-error" class="error" data-error="email"></p>
+      </div>
+      <div class="inquiry-field" data-field="phone">
+        <label for="phone">رقم الجوال <span class="req" aria-hidden="true">*</span></label>
+        <input id="phone" name="phone" type="tel" autocomplete="tel" maxlength="30" inputmode="tel" dir="ltr" required aria-required="true">
+        <p id="phone-error" class="error" data-error="phone"></p>
+      </div>
+      <div class="inquiry-field" data-field="website">
+        <label for="website">الموقع الإلكتروني <span class="opt">اختياري</span></label>
+        <input id="website" name="website" type="url" autocomplete="url" maxlength="500" inputmode="url" dir="ltr" placeholder="https://">
+        <p id="website-error" class="error" data-error="website"></p>
+      </div>
+      <div class="inquiry-field" data-field="message">
+        <label for="message">اترك رسالتك <span class="opt">اختياري</span></label>
+        <textarea id="message" name="message" maxlength="3000" rows="4"></textarea>
+        <p id="message-error" class="error" data-error="message"></p>
+      </div>
+      <p id="inquiry-status" class="inquiry-status" role="status"></p>
+      <button type="submit">إرسال</button>
+    </form>
+  </main>
+  <script type="module" src="/js/inquiry.js"></script>
+</body>
+</html>
